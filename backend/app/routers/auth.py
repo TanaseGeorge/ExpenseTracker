@@ -4,7 +4,7 @@ from passlib.context import CryptContext
 
 from backend.app.database import get_db
 from backend.app.models import User
-from backend.app.schemas.user import UserCreate, UserOut
+from backend.app.schemas.user import UserCreate, UserOut, UserLogin
 
 router = APIRouter(
     prefix="/users",
@@ -32,6 +32,24 @@ def create_user(user: UserCreate, db: Session = Depends(get_db)):
     db.refresh(db_user)
 
     return db_user
+
+@router.post("/login", response_model=UserOut)
+def login_user(credentials: UserLogin, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.email == credentials.email).first()
+
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid email or password"
+        )
+
+    if not pwd_context.verify(credentials.password, user.hashed_password):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid email or password"
+        )
+
+    return user
 
 
 @router.get("/{user_id}", response_model=UserOut)

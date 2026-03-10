@@ -1,0 +1,152 @@
+.home-page {
+  min-height: calc(100vh - 72px);
+  background: #0f1117;
+  color: #f8fafc;
+  padding: 36px 24px 48px;
+}
+
+.home-hero {
+  max-width: 1200px;
+  margin: 0 auto 32px;
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(124, 106, 247, 0.18), transparent 28%),
+    radial-gradient(circle at 80% 70%, rgba(16, 185, 129, 0.1), transparent 24%),
+    rgba(20, 24, 34, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.26);
+  overflow: hidden;
+}
+
+.home-hero-content {
+  max-width: 760px;
+  padding: 72px 40px;
+}
+
+.home-badge {
+  display: inline-block;
+  margin-bottom: 18px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(124, 106, 247, 0.14);
+  color: #c4b5fd;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.home-title {
+  margin: 0 0 18px;
+  font-size: 52px;
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+  font-weight: 800;
+}
+
+.home-subtitle {
+  margin: 0;
+  max-width: 640px;
+  color: #aeb8c8;
+  font-size: 18px;
+  line-height: 1.7;
+}
+
+.home-actions {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-top: 30px;
+}
+
+.home-primary-btn,
+.home-secondary-btn {
+  text-decoration: none;
+  border-radius: 14px;
+  padding: 14px 20px;
+  font-size: 15px;
+  font-weight: 700;
+  transition: transform 0.18s ease, opacity 0.18s ease, background 0.18s ease;
+}
+
+.home-primary-btn {
+  background: linear-gradient(135deg, #7c6af7 0%, #6d5df2 100%);
+  color: white;
+  box-shadow: 0 10px 24px rgba(124, 106, 247, 0.28);
+}
+
+.home-secondary-btn {
+  background: rgba(255, 255, 255, 0.08);
+  color: #f8fafc;
+}
+
+.home-primary-btn:hover,
+.home-secondary-btn:hover {
+  transform: translateY(-1px);
+}
+
+.home-features {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+
+.home-feature-card {
+  background: rgba(20, 24, 34, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 20px;
+  padding: 24px;
+}
+
+.home-feature-card h3 {
+  margin: 0 0 12px;
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.home-feature-card p {
+  margin: 0;
+  color: #aeb8c8;
+  line-height: 1.7;
+  font-size: 15px;
+}
+
+@media (max-width: 900px) {
+  .home-title {
+    font-size: 40px;
+  }
+
+  .home-features {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .home-page {
+    padding: 22px 14px 32px;
+  }
+
+  .home-hero-content {
+    padding: 44px 20px;
+  }
+
+  .home-title {
+    font-size: 32px;
+  }
+
+  .home-subtitle {
+    font-size: 16px;
+  }
+
+  .home-actions {
+    flex-direction: column;
+  }
+
+  .home-primary-btn,
+  .home-secondary-btn {
+    width: 100%;
+    text-align: center;
+  }
+}
