@@ -17,7 +17,7 @@ This feature analyzes the user’s expenses and generates a short financial insi
 
 The insight is generated dynamically based on the user's expense data.
 
----
+
 
 ## Tech Stack
 
@@ -32,7 +32,7 @@ The insight is generated dynamically based on the user's expense data.
 - Vite
 - CSS
 
----
+
 
 ## LLM / AI Tools Used
 
@@ -66,7 +66,7 @@ During development, several large language models were used as development assis
 
 These tools helped accelerate development, explore implementation alternatives, and refine prompt engineering strategies.
 
----
+
 
 ## Challenges and LLM Hallucinations
 
