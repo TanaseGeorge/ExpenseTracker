@@ -7,12 +7,12 @@ class CategoryBase(BaseModel):
 
 
 class CategoryCreate(CategoryBase):
-    pass
+    user_id: int
 
 
 class CategoryOut(CategoryBase):
     id: int
+    user_id: int
 
-
-class Config:
-    from_attributes = True
+    class Config:
+        from_attributes = True

@@ -3,7 +3,7 @@ import { categoriesApi } from "../api/client";
 import { useToast } from "../context/ToastContext";
 import "../styles/CategoryModal.css";
 
-export default function CategoryModal({ onSave, onClose }) {
+export default function CategoryModal({ userId, onSave, onClose }) {
   const showToast = useToast();
 
   const [form, setForm] = useState({
@@ -44,6 +44,7 @@ export default function CategoryModal({ onSave, onClose }) {
       const payload = {
         name: form.name.trim(),
         description: form.description.trim(),
+        user_id: userId,
       };
 
       const savedCategory = await categoriesApi.create(payload);
@@ -60,10 +61,7 @@ export default function CategoryModal({ onSave, onClose }) {
 
   return (
     <div className="category-modal-overlay" onClick={onClose}>
-      <div
-        className="category-modal"
-        onClick={(e) => e.stopPropagation()}
-      >
+      <div className="category-modal" onClick={(e) => e.stopPropagation()}>
         <div className="category-modal-header">
           <div>
             <h2>New Category</h2>

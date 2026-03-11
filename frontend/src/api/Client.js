@@ -5,11 +5,11 @@ async function request(method, path, body) {
     method,
     headers: { "Content-Type": "application/json" },
   };
+
   if (body !== undefined) opts.body = JSON.stringify(body);
 
   const res = await fetch(`${API_BASE}${path}`, opts);
 
-  // 204 No Content — nothing to parse
   if (res.status === 204) return null;
 
   const data = await res.json();
@@ -21,6 +21,7 @@ async function request(method, path, body) {
         : Array.isArray(data?.detail)
         ? data.detail.map((d) => d.msg).join(", ")
         : "Something went wrong";
+
     throw new Error(msg);
   }
 
@@ -28,33 +29,33 @@ async function request(method, path, body) {
 }
 
 export const api = {
-  get:    (path)        => request("GET",    path),
-  post:   (path, body)  => request("POST",   path, body),
-  patch:  (path, body)  => request("PATCH",  path, body),
-  delete: (path)        => request("DELETE", path),
+  get: (path) => request("GET", path),
+  post: (path, body) => request("POST", path, body),
+  patch: (path, body) => request("PATCH", path, body),
+  delete: (path) => request("DELETE", path),
 };
 
-// ── Resource helpers ──────────────────────────────────
 export const usersApi = {
-  create: (data)   => api.post("/users/", data),
-  getById: (id)    => api.get(`/users/${id}`),
+  create: (data) => api.post("/users/", data),
+  getById: (id) => api.get(`/users/${id}`),
   login: (data) => api.post("/users/login", data),
 };
 
 export const categoriesApi = {
-  list:   ()       => api.get("/categories/"),
-  create: (data)   => api.post("/categories/", data),
-  delete: (id)     => api.delete(`/categories/${id}`),
+  list: (userId) => api.get(`/categories/?user_id=${userId}`),
+  create: (data) => api.post("/categories/", data),
+  delete: (id) => api.delete(`/categories/${id}`),
 };
 
 export const expensesApi = {
   list: (userId, params = {}) => {
     const q = new URLSearchParams({ user_id: userId, ...params });
-    return api.get(`/expenses/?${q}`);
+    return api.get(`/expenses/?${q.toString()}`);
   },
-  getById: (id)    => api.get(`/expenses/${id}`),
-  create:  (data)  => api.post("/expenses/", data),
-  update:  (id, d) => api.patch(`/expenses/${id}`, d),
-  delete:  (id)    => api.delete(`/expenses/${id}`),
-  summary: (userId)=> api.get(`/expenses/summary/${userId}`),
+  getById: (id) => api.get(`/expenses/${id}`),
+  create: (data) => api.post("/expenses/", data),
+  update: (id, data) => api.patch(`/expenses/${id}`, data),
+  delete: (id) => api.delete(`/expenses/${id}`),
+  summary: (userId) => api.get(`/expenses/summary/${userId}`),
+  getAiInsight: (userId) => api.get(`/expenses/ai-insight/${userId}`),
 };

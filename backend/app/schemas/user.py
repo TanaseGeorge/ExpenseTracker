@@ -9,6 +9,7 @@ class UserBase(BaseModel):
 class UserCreate(UserBase):
     password: str = Field(..., min_length=6, example="secret123")
 
+
 class UserLogin(BaseModel):
     email: str = Field(..., example="john@example.com")
     password: str = Field(..., min_length=6, example="secret123")

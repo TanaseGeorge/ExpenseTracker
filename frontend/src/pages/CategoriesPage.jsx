@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { categoriesApi } from "../api/client";
 import { useToast } from "../context/ToastContext";
+import { useAuth } from "../context/AuthContext";
 import CategoryModal from "../components/CategoryModal";
 import "../styles/CategoriesPage.css";
 
@@ -20,6 +21,7 @@ function getCategoryColor(id) {
 
 export default function CategoriesPage() {
   const showToast = useToast();
+  const { user } = useAuth();
 
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -27,16 +29,22 @@ export default function CategoriesPage() {
   const [deleting, setDeleting] = useState(null);
 
   const load = useCallback(async () => {
+    if (!user?.id) {
+      setCategories([]);
+      setLoading(false);
+      return;
+    }
+
     setLoading(true);
     try {
-      const cats = await categoriesApi.list();
+      const cats = await categoriesApi.list(user.id);
       setCategories(Array.isArray(cats) ? cats : []);
     } catch (err) {
       showToast(err?.message || "Failed to load categories.", "error");
     } finally {
       setLoading(false);
     }
-  }, [showToast]);
+  }, [user?.id, showToast]);
 
   useEffect(() => {
     load();
@@ -141,8 +149,9 @@ export default function CategoriesPage() {
         </div>
       )}
 
-      {showAdd && (
+      {showAdd && user?.id && (
         <CategoryModal
+          userId={user.id}
           onSave={handleSave}
           onClose={() => setShowAdd(false)}
         />

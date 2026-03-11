@@ -43,6 +43,11 @@ export default function ExpensesPage() {
   const [editExp, setEditExp] = useState(null);
   const [deleting, setDeleting] = useState(null);
 
+  const [aiInsight, setAiInsight] = useState("");
+  const [aiSummary, setAiSummary] = useState(null);
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiError, setAiError] = useState("");
+
   const load = useCallback(async () => {
     if (!user?.id) {
       setExpenses([]);
@@ -55,7 +60,7 @@ export default function ExpensesPage() {
     try {
       const [exps, cats] = await Promise.all([
         expensesApi.list(user.id),
-        categoriesApi.list(),
+        categoriesApi.list(user.id),
       ]);
 
       setExpenses(Array.isArray(exps) ? exps : []);
@@ -87,6 +92,27 @@ export default function ExpensesPage() {
       showToast(err?.message || "Failed to delete expense.", "error");
     } finally {
       setDeleting(null);
+    }
+  };
+
+  const handleGenerateInsight = async () => {
+    if (!user?.id) return;
+
+    setAiLoading(true);
+    setAiError("");
+    setAiInsight("");
+    setAiSummary(null);
+
+    try {
+      const result = await expensesApi.getAiInsight(user.id);
+      setAiInsight(result?.insight || "");
+      setAiSummary(result?.summary_data || null);
+    } catch (err) {
+      const message = err?.message || "Failed to generate AI insight.";
+      setAiError(message);
+      showToast(message, "error");
+    } finally {
+      setAiLoading(false);
     }
   };
 
@@ -283,7 +309,59 @@ export default function ExpensesPage() {
         )}
       </div>
 
-      {(showAdd || editExp) && (
+      {expenses.length > 0 && (
+        <div className="expenses-card expenses-ai-card">
+          <div className="expenses-ai-header">
+            <div>
+              <h2 className="expenses-ai-title">AI Spending Insight</h2>
+              <p className="expenses-ai-subtitle">
+                Generate a short analysis based on your expenses.
+              </p>
+            </div>
+
+            <button
+              className="expenses-primary-btn"
+              onClick={handleGenerateInsight}
+              disabled={aiLoading}
+            >
+              {aiLoading ? "Generating..." : "Generate AI Insight"}
+            </button>
+          </div>
+
+          {aiError && (
+            <p className="expenses-ai-error">{aiError}</p>
+          )}
+
+          {aiSummary && (
+            <div className="expenses-ai-summary">
+              <h3 className="expenses-ai-section-title">Summary Data</h3>
+              <p className="expenses-ai-total">
+                <strong>Total spent:</strong> {formatAmount(aiSummary.total_spent)}
+              </p>
+
+              <div className="expenses-ai-summary-grid">
+                {Object.entries(aiSummary.categories || {}).map(([category, amount]) => (
+                  <div className="expenses-ai-summary-item" key={category}>
+                    <span className="expenses-ai-summary-label">{category}</span>
+                    <span className="expenses-ai-summary-value">
+                      {formatAmount(amount)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {aiInsight && (
+            <div className="expenses-ai-result">
+              <h3 className="expenses-ai-section-title">Insight</h3>
+              <div className="expenses-ai-output">{aiInsight}</div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {(showAdd || editExp) && user?.id && (
         <ExpenseModal
           categories={categories}
           userId={user.id}
