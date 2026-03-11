@@ -6,7 +6,7 @@ from datetime import date
 import os
 
 from openai import OpenAI
-
+from dotenv import load_dotenv
 from backend.app.database import get_db
 from backend.app.models import Expense, Category, User
 from backend.app.schemas.expense import ExpenseCreate, ExpenseUpdate, ExpenseOut
@@ -16,9 +16,16 @@ router = APIRouter(
     tags=["Expenses"]
 )
 
+load_dotenv()
+
+api_key = os.getenv("OPENROUTER_API_KEY")
+
+if not api_key:
+    raise RuntimeError("OPENROUTER_API_KEY is missing")
+
 client = OpenAI(
     base_url="https://openrouter.ai/api/v1",
-    api_key=os.getenv("OPENROUTER_API_KEY")
+    api_key=api_key,
 )
 
 
