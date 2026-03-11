@@ -25,7 +25,7 @@ The insight is generated dynamically based on the user's expense data.
 - Python
 - FastAPI
 - SQLAlchemy
-- SQLite / PostgreSQL
+- PostgreSQL
 
 ### Frontend
 - React
