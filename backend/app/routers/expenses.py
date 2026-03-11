@@ -10,6 +10,7 @@ from dotenv import load_dotenv
 from backend.app.database import get_db
 from backend.app.models import Expense, Category, User
 from backend.app.schemas.expense import ExpenseCreate, ExpenseUpdate, ExpenseOut
+import requests;
 
 router = APIRouter(
     prefix="/expenses",
@@ -17,16 +18,6 @@ router = APIRouter(
 )
 
 load_dotenv()
-
-api_key = os.getenv("OPENROUTER_API_KEY")
-
-if not api_key:
-    raise RuntimeError("OPENROUTER_API_KEY is missing")
-
-client = OpenAI(
-    base_url="https://openrouter.ai/api/v1",
-    api_key=api_key,
-)
 
 
 def build_expense_summary(expenses):
@@ -58,6 +49,16 @@ Context:
 The user is using a personal expense tracking application.
 Your task is to analyze their spending and provide helpful insights.
 
+Important context about spending:
+Some expense categories represent essential needs and should not automatically be considered problems. 
+Examples of essential expenses include:
+- rent or housing costs
+- health or medical expenses
+- necessary car repairs or maintenance
+- basic utilities and bills
+
+When giving advice, prioritize identifying overspending in non-essential categories rather than essential ones.
+
 User spending data:
 Month: {expense_summary["month"]}
 Total spent: {expense_summary["total_spent"]}
@@ -70,6 +71,11 @@ Instructions:
 2. Identify one potential concern or unusual pattern.
 3. Suggest two practical ways the user could reduce spending.
 
+Guidelines for analysis:
+- Consider the relative importance of each expense category.
+- Do not treat essential expenses (such as rent, health, or necessary repairs) as negative unless they are extremely disproportionate.
+- Focus recommendations on discretionary or less essential spending when possible.
+
 Response format:
 Summary: <one short paragraph>
 Issue: <one sentence>
@@ -81,6 +87,7 @@ Rules:
 - Keep the response under 100 words.
 - Use simple and friendly language.
 - Base the advice strictly on the provided data.
+- Avoid suggesting reductions in essential expenses unless clearly excessive.
 """.strip()
 
 
@@ -88,25 +95,23 @@ def generate_ai_spending_insight(expenses):
     summary = build_expense_summary(expenses)
     prompt = build_prompt(summary)
 
-    response = client.chat.completions.create(
-        model="meta-llama/llama-3.3-70b-instruct:free",
-        messages=[
-            {
-                "role": "system",
-                "content": "You are a helpful personal finance assistant."
-            },
-            {
-                "role": "user",
-                "content": prompt
-            }
-        ]
+    response = requests.post(
+        "http://localhost:11434/api/generate",
+        json={
+            "model": "phi3:mini",
+            "prompt": prompt,
+            "stream": False
+        }
     )
 
-    insight = response.choices[0].message.content.strip()
+    if response.status_code != 200:
+        raise Exception("Ollama request failed")
+
+    data = response.json()
 
     return {
         "summary_data": summary,
-        "insight": insight
+        "insight": data["response"].strip()
     }
 
 

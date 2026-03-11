@@ -52,6 +52,9 @@
   font-size: 22px;
   line-height: 1;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transition: opacity 0.18s ease, transform 0.18s ease;
 }
 
